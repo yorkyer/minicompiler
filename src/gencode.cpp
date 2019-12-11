@@ -170,6 +170,7 @@ static void function()
 {
 	resetvar("a");
 	resetvar("t");
+	resetvar("s");
 
 	if (match(TokenTag::VOID))
 		eat(TokenTag::VOID);
@@ -196,6 +197,7 @@ static void main_function()
 {
 	resetvar("a");
 	resetvar("t");
+	resetvar("s");
 	outcode << indent << "FUNCTION " << "main:\n";
 	addindent();
 
@@ -313,7 +315,7 @@ static void variable_declaration(bool isglobal)
 		else {
 			var = newvar("s");
 			outcode << indent << var << " = " << HP << endl;
-			outcode << indent << HP << " = " << HP << " + " << stoi(size) * 4 << endl;
+			outcode << indent << HP << " = " << var << " + " << stoi(size) * 4 << endl;
 		}
 	}
 	else {
@@ -348,7 +350,7 @@ static void variable_declaration(bool isglobal)
 			else {
 				var = newvar("s");
 				outcode << indent << var << " = " << HP << endl;
-				outcode << indent << HP << " = " << HP << " + " << stoi(size) * 4 << endl;
+				outcode << indent << HP << " = " << var << " + " << stoi(size) * 4 << endl;
 			}
 		}
 		else {
@@ -386,6 +388,7 @@ static void stmts()
 
 static void stmt()
 {
+	resetvar("t");
 	if (match(TokenTag::ID) && match(1, TokenTag::LPARENT)) {
 		call();
 		eat(TokenTag::SEMICN);

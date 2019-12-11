@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "mips_impl.h"
+#include "optimize.h"
 
 
 static vector<MipsToken> data_tokens;
@@ -10,10 +11,16 @@ static string indent;
 static ofstream output;
 
 
-void mips()
+void mips(bool isoptimize)
 {
 	mips_lexer("data.txt", data_tokens);
-	mips_lexer("code.txt", code_tokens);
+	if (isoptimize) {
+		optimize();
+		mips_lexer("optimize.txt", code_tokens);
+	}
+	else {
+		mips_lexer("code.txt", code_tokens);
+	}	
 	data_parser();
 	code_parser();
 }
@@ -325,8 +332,12 @@ static void code_parser()
 				id2 = "t9";
 			}
 			id1 = "$" + id1;
-			id2 = "$" + id2;
-			output << "sw " << id2 << ", " << "0(" << id1 << ")\n\n";
+			if (code_tokens[i+5].tag == MipsTag::NUM) {
+				output << "li $t9, " << id2 << "\n";
+				output << "sw $t9" << ", " << "0(" << id1 << ")\n\n";
+			}
+			else
+				output << "sw $" << id2 << ", " << "0(" << id1 << ")\n\n";
 
 			i += 5;
 		}
@@ -378,7 +389,7 @@ static void code_parser()
 				output << "sub $sp, $sp, " << offset << "\n";
 			}
 			int count = 0;
-			while (code_tokens[i+1].tag == MipsTag::ID &&
+			while ((code_tokens[i+1].tag == MipsTag::ID || code_tokens[i+1].tag == MipsTag::NUM) &&
 						 code_tokens[i+2].tag != MipsTag::ASSIGN && 
 						 code_tokens[i+2].tag != MipsTag::COLON) {
 				i += 1;
@@ -390,9 +401,17 @@ static void code_parser()
 				}
 				arg = "$" + arg;
 				if (count < 4)
-					output << "move $a" << count << ", " << arg << "\n";
+					if (code_tokens[i].tag == MipsTag::NUM)
+						output << "li $a" << count << ", " << code_tokens[i].value << "\n";
+					else
+						output << "move $a" << count << ", " << arg << "\n";
 				else
-					output << "sw " << arg << ", " << (count - 4) * 4 << "($sp)\n";
+					if (code_tokens[i].tag == MipsTag::NUM) {
+						output << "li $t8" << ", " << code_tokens[i].value << "\n";
+						output << "sw $t8" << ", " << (count - 4) * 4 << "($sp)\n";
+					}
+					else
+						output << "sw " << arg << ", " << (count - 4) * 4 << "($sp)\n";
 				count += 1;
 			}
 
@@ -423,10 +442,11 @@ static void code_parser()
 			       code_tokens[i+1].tag != MipsTag::STR &&
 			       code_tokens[i+2].tag == MipsTag::ID) {
 			string id1 = code_tokens[i+2].value;
-			output << "\nsub $sp, $sp, 4\n";
+			output << "\nsub $sp, $sp, 8\n";
 			output << "sw $a0, 0($sp)\n";
+			output << "sw $v0, 4($sp)\n";
 			if (isspill(id1)) {
-				stack_read(id1, func, 4);
+				stack_read(id1, func, 8);
 				id1 = "t8";
 			}
 			id1 = "$" + id1;
@@ -437,39 +457,48 @@ static void code_parser()
 				output << "li $v0, 11\n";
 			output << "syscall\n\n";
 			output << "lw $a0, 0($sp)\n";
-			output << "add $sp, $sp, 4\n\n";
+			output << "lw $v0, 4($sp)\n";
+			output << "add $sp, $sp, 8\n\n";
 
 			i += 2;
 		}
 		else if (code_tokens[i].tag == MipsTag::PRINT && 
-			       code_tokens[i+1].tag == MipsTag::CHR &&
+			       (code_tokens[i+1].tag == MipsTag::CHR || code_tokens[i+1].tag == MipsTag::INT) &&
 			       code_tokens[i+2].tag == MipsTag::NUM) {
 			string num = code_tokens[i+2].value;
-			output << "\nsub $sp, $sp, 4\n";
+			output << "\nsub $sp, $sp, 8\n";
 			output << "sw $a0, 0($sp)\n";
+			output << "sw $v0, 4($sp)\n";
 			output << "li $a0, " << num << "\n";
-			output << "li $v0, 11\n";
+			if (code_tokens[i+1].tag == MipsTag::INT)
+				output << "li $v0, 1\n";
+			else
+				output << "li $v0, 11\n";
 			output << "syscall\n\n";
 			output << "lw $a0, 0($sp)\n";
-			output << "add $sp, $sp, 4\n\n";
+			output << "lw $v0, 4($sp)\n";
+			output << "add $sp, $sp, 8\n\n";
 
 			i += 2;
 		}
 		else if (code_tokens[i].tag == MipsTag::PRINT) {
 			string id1 = code_tokens[i+2].value;
-			output << "\nsub $sp, $sp, 4\n";
+			output << "\nsub $sp, $sp, 8\n";
 			output << "sw $a0, 0($sp)\n";
+			output << "sw $v0, 4($sp)\n";
 			output << "la $a0, " << id1 << "\n";
 			output << "li $v0, 4\n";
 			output << "syscall\n";
 			output << "lw $a0, 0($sp)\n";
-			output << "add $sp, $sp, 4\n\n";
+			output << "lw $v0, 4($sp)\n";
+			output << "add $sp, $sp, 8\n\n";
 
 			i += 2;
 		}
 		else if (code_tokens[i].tag == MipsTag::READ) {
 			string id = code_tokens[i+2].value;
-			output << "\n";
+			output << "\nsub $sp, $sp, 4\n";
+			output << "sw $v0, 0($sp)\n";
 			if (code_tokens[i+1].tag == MipsTag::INT)
 				output << "li $v0, 5\n";
 			else
@@ -477,12 +506,14 @@ static void code_parser()
 			output << "syscall\n\n";
 			if (isspill(id)) {
 				output << "move $t8, $v0\n";
-				stack_save(id, func);
+				stack_save(id, func, 4);
 			}
 			else {
 				id = "$" + id;
-				output << "move " << id << ", $v0\n\n";  
+				output << "move " << id << ", $v0\n";  
 			}
+			output << "lw $v0, 0($sp)\n";
+			output << "add $s0, $sp, 4\n\n";
 
 			i += 2;
 		}
@@ -560,13 +591,25 @@ static void stack_read(string id, string func, int offset)
 }
 
 
+static void stack_save(string id, string func, int offset)
+{
+	stack_save(id, "t8", func, offset);
+}
+
+
 static void stack_save(string id, string func)
 {
-	stack_save(id, "t8", func);
+	stack_save(id, "t8", func, 0);
 }
 
 
 static void stack_save(string id, string reg, string func)
+{
+	stack_save(id, reg, func, 0);
+}
+
+
+static void stack_save(string id, string reg, string func, int offset)
 {
 	if (id[0] == 'g') {
 		reg = "$" + reg;
@@ -574,14 +617,13 @@ static void stack_save(string id, string reg, string func)
 		return;
 	}
 
-	int offset;
 	int index = stoi(id.substr(1));
 	if (id[0] == 'a') 
-		offset = 4 * (8 + table[func].spill_s + table[func].spill_t + index - 4);
+		offset += 4 * (8 + table[func].spill_s + table[func].spill_t + index - 4);
 	else if (id[0] == 's')
-		offset = 4 * (8 + index - 8);
+		offset += 4 * (8 + index - 8);
 	else // 't'
-		offset = 4 * (8 + table[func].spill_s + index - 8);
+		offset += 4 * (8 + table[func].spill_s + index - 8);
 	reg = "$" + reg;
 	output << "sw " << reg << ", " << offset << "($sp)\n";
 }
@@ -645,7 +687,7 @@ static void preprocess()
 					i += 1; // CALL
 					string call_f = code_tokens[i].value;
 					i += 1; // FUNC_NAME
-					while (code_tokens[i].tag == MipsTag::ID &&
+					while ((code_tokens[i].tag == MipsTag::ID || code_tokens[i].tag == MipsTag::NUM) &&
 								 code_tokens[i+1].tag != MipsTag::ASSIGN && 
 								 code_tokens[i+1].tag != MipsTag::COLON) {
 						i += 1;

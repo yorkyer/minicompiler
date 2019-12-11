@@ -8,13 +8,19 @@
 
 int main(int argc, char *argv[])
 {
-	lexer(argc, argv);
+	if (argc >= 2)
+		lexer(argv[1]);
+	else
+		lexer("testfile.txt");
 
 	parser();
 
 	gencode();
 
-	mips();
+	if (argc >= 3) // if need to optimize
+		mips(true);
+	else
+		mips(false);
 
 	return 0;
 }

@@ -2,7 +2,7 @@
 #define MIPS_H
 
 
-void mips();
+void mips(bool isoptimize);
 
 
 #endif

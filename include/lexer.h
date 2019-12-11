@@ -27,7 +27,7 @@ public:
 };
 
 
-void lexer(int argc, char *argv[]);
+void lexer(string file);
 
 
 #endif

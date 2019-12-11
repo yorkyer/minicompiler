@@ -5,17 +5,12 @@
 vector<Token> tokens;
 
 
-void lexer(int argc, char *argv[]);
+void lexer(string file);
 
 
-void lexer(int argc, char *argv[])
+void lexer(string file)
 {
-	ifstream input;
-#ifndef DEBUG	
-	input.open("testfile.txt");
-#else
- 	input.open(argv[1]);
-#endif
+	ifstream input(file);
 	char c;
 	while (input.get(c)) {
 		if (c == '\n') tokens.push_back(Token(TokenTag::LINEEND, ""));
