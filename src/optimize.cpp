@@ -50,7 +50,7 @@ static void get_bb()
 	string line;
 	vector<vector<string>> block;
 	while (getline(input, line)) {
-		if (line.empty()) 
+		if (line.empty())
 			continue;
 
 		vector<string> tokens = parse(line);
@@ -363,6 +363,8 @@ static void graph2bb()
 			output << "M[ " << address << " ] = " << var << "\n";
 		}
 	}
+
+	output << "\n";
 
 #ifdef DEBUG
 	cout << "\nnode2var: \n";

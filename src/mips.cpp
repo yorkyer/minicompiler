@@ -11,12 +11,22 @@ static string indent;
 static ofstream output;
 
 
+void copy_file( const char* srce_file, const char* dest_file )
+{
+    std::ifstream srce( srce_file, std::ios::binary ) ;
+    std::ofstream dest( dest_file, std::ios::binary ) ;
+    dest << srce.rdbuf() ;
+}
+
+
 void mips(bool isoptimize)
 {
 	mips_lexer("data.txt", data_tokens);
 	if (isoptimize) {
 		optimize();
 		mips_lexer("optimize.txt", code_tokens);
+		copy_file("code.txt", "17373266_叶开辉_优化前中间代码");
+		copy_file("optimize.txt", "17373266_叶开辉_优化后中间代码");
 	}
 	else {
 		mips_lexer("code.txt", code_tokens);
@@ -657,6 +667,7 @@ static void postprocess()
 		remove("data.txt");
 		remove("data_area.txt");
 		remove("code_area.txt");
+		remove("optimize.txt");
 	#endif
 }
 
