@@ -1,0 +1,35 @@
+FUNCTION fact:
+	if0:
+		t0 = a0
+		t1 = 1
+		IF t0 >= t1 GOTO else0
+		t0 = 1
+		v0 = t0
+		RET
+
+		GOTO if0_end
+	else0:
+		t1 = a0
+		t2 = 1
+		t1 = t1 - t2
+		CALL fact t1
+
+		t0 = a0 * v0
+		v0 = t0
+		RET
+
+	if0_end:
+
+	RET
+
+FUNCTION main:
+	PRINT STR g1
+	t1 = 10
+	CALL fact t1
+
+	t0 = v0
+	PRINT INT t0
+	PRINT CHR 10
+
+	RET
+

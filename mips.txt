@@ -1,0 +1,209 @@
+.data
+g0:		.word 0x10040000
+g1:		.asciiz "The factorial of 10 is "
+
+.text
+jal __main
+
+li $v0, 10
+syscall
+
+
+__fact:
+
+sub $sp, $sp, 32
+sw $s0, 0($sp)
+sw $s1, 4($sp)
+sw $s2, 8($sp)
+sw $s3, 12($sp)
+sw $s4, 16($sp)
+sw $s5, 20($sp)
+sw $s6, 24($sp)
+sw $s7, 28($sp)
+
+if0:
+move $t0, $a0
+li $t1, 1
+
+bge $t0, $t1, else0
+
+li $t0, 1
+move $v0, $t0
+
+lw $s0, 0($sp)
+lw $s1, 4($sp)
+lw $s2, 8($sp)
+lw $s3, 12($sp)
+lw $s4, 16($sp)
+lw $s5, 20($sp)
+lw $s6, 24($sp)
+lw $s7, 28($sp)
+add $sp, $sp, 32
+jr $ra
+
+j if0_end
+else0:
+move $t1, $a0
+li $t2, 1
+sub $t1, $t1, $t2
+
+sub $sp, $sp, 52
+sw $ra, 0($sp)
+sw $a0, 4($sp)
+sw $a1, 8($sp)
+sw $a2, 12($sp)
+sw $a3, 16($sp)
+sw $t0, 20($sp)
+sw $t1, 24($sp)
+sw $t2, 28($sp)
+sw $t3, 32($sp)
+sw $t4, 36($sp)
+sw $t5, 40($sp)
+sw $t6, 44($sp)
+sw $t7, 48($sp)
+
+move $a0, $t1
+
+jal __fact
+
+
+lw $ra, 0($sp)
+lw $a0, 4($sp)
+lw $a1, 8($sp)
+lw $a2, 12($sp)
+lw $a3, 16($sp)
+lw $t0, 20($sp)
+lw $t1, 24($sp)
+lw $t2, 28($sp)
+lw $t3, 32($sp)
+lw $t4, 36($sp)
+lw $t5, 40($sp)
+lw $t6, 44($sp)
+lw $t7, 48($sp)
+add $sp, $sp, 52
+
+mul $t0, $a0, $v0
+move $v0, $t0
+
+lw $s0, 0($sp)
+lw $s1, 4($sp)
+lw $s2, 8($sp)
+lw $s3, 12($sp)
+lw $s4, 16($sp)
+lw $s5, 20($sp)
+lw $s6, 24($sp)
+lw $s7, 28($sp)
+add $sp, $sp, 32
+jr $ra
+
+if0_end:
+
+lw $s0, 0($sp)
+lw $s1, 4($sp)
+lw $s2, 8($sp)
+lw $s3, 12($sp)
+lw $s4, 16($sp)
+lw $s5, 20($sp)
+lw $s6, 24($sp)
+lw $s7, 28($sp)
+add $sp, $sp, 32
+jr $ra
+
+
+__main:
+
+sub $sp, $sp, 32
+sw $s0, 0($sp)
+sw $s1, 4($sp)
+sw $s2, 8($sp)
+sw $s3, 12($sp)
+sw $s4, 16($sp)
+sw $s5, 20($sp)
+sw $s6, 24($sp)
+sw $s7, 28($sp)
+
+
+sub $sp, $sp, 8
+sw $a0, 0($sp)
+sw $v0, 4($sp)
+la $a0, g1
+li $v0, 4
+syscall
+lw $a0, 0($sp)
+lw $v0, 4($sp)
+add $sp, $sp, 8
+
+li $t1, 10
+
+sub $sp, $sp, 52
+sw $ra, 0($sp)
+sw $a0, 4($sp)
+sw $a1, 8($sp)
+sw $a2, 12($sp)
+sw $a3, 16($sp)
+sw $t0, 20($sp)
+sw $t1, 24($sp)
+sw $t2, 28($sp)
+sw $t3, 32($sp)
+sw $t4, 36($sp)
+sw $t5, 40($sp)
+sw $t6, 44($sp)
+sw $t7, 48($sp)
+
+move $a0, $t1
+
+jal __fact
+
+
+lw $ra, 0($sp)
+lw $a0, 4($sp)
+lw $a1, 8($sp)
+lw $a2, 12($sp)
+lw $a3, 16($sp)
+lw $t0, 20($sp)
+lw $t1, 24($sp)
+lw $t2, 28($sp)
+lw $t3, 32($sp)
+lw $t4, 36($sp)
+lw $t5, 40($sp)
+lw $t6, 44($sp)
+lw $t7, 48($sp)
+add $sp, $sp, 52
+
+move $t0, $v0
+
+sub $sp, $sp, 8
+sw $a0, 0($sp)
+sw $v0, 4($sp)
+move $a0, $t0
+li $v0, 1
+syscall
+
+lw $a0, 0($sp)
+lw $v0, 4($sp)
+add $sp, $sp, 8
+
+
+sub $sp, $sp, 8
+sw $a0, 0($sp)
+sw $v0, 4($sp)
+li $a0, 10
+li $v0, 11
+syscall
+
+lw $a0, 0($sp)
+lw $v0, 4($sp)
+add $sp, $sp, 8
+
+
+lw $s0, 0($sp)
+lw $s1, 4($sp)
+lw $s2, 8($sp)
+lw $s3, 12($sp)
+lw $s4, 16($sp)
+lw $s5, 20($sp)
+lw $s6, 24($sp)
+lw $s7, 28($sp)
+add $sp, $sp, 32
+jr $ra
+

@@ -1,0 +1,6 @@
+g0
+=
+0x10040000
+g1
+=
+"The factorial of 10 is "

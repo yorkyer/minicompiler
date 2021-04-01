@@ -1,0 +1,153 @@
+enter program
+enter const_data
+exit const_data
+enter variable_data
+exit variable_data
+enter function
+	int	int
+	fact	id
+enter a new scope
+	(	(
+enter args
+	int	int
+	n	id
+exit args
+	)	)
+enter block
+	{	{
+enter const_data
+exit const_data
+enter variable_data
+exit variable_data
+enter stmts
+enter stmt
+enter if_condition
+	if	if
+	(	(
+enter condition
+enter expr
+enter term
+enter factor
+	n	id
+exit factor
+exit term
+exit expr
+	<	<
+enter expr
+enter term
+enter factor
+	1	num
+exit factor
+exit term
+exit expr
+exit condition
+	)	)
+enter stmt
+enter ret
+	return	return
+	(	(
+enter expr
+enter term
+enter factor
+	1	num
+exit factor
+exit term
+exit expr
+	)	)
+exit ret
+	;	;
+exit stmt
+	else	else
+enter stmt
+enter ret
+	return	return
+	(	(
+enter expr
+enter term
+enter factor
+	n	id
+exit factor
+	*	*
+enter factor
+enter call
+	fact	id
+	(	(
+enter values
+enter expr
+enter term
+enter factor
+	n	id
+exit factor
+exit term
+	-	-
+enter term
+enter factor
+	1	num
+exit factor
+exit term
+exit expr
+exit values
+	)	)
+exit call
+exit factor
+exit term
+exit expr
+	)	)
+exit ret
+	;	;
+exit stmt
+exit stmt
+exit stmts
+	}	}
+exit the current scope
+exit block
+exit function
+enter main_function
+	void	void
+	main	id
+	(	(
+	)	)
+enter block
+	{	{
+enter a new scope
+enter const_data
+exit const_data
+enter variable_data
+exit variable_data
+enter stmts
+enter stmt
+enter print
+	printf	printf
+	(	(
+	The factorial of 10 is 	str
+	,	,
+enter expr
+enter term
+enter factor
+enter call
+	fact	id
+	(	(
+enter values
+enter expr
+enter term
+enter factor
+	10	num
+exit factor
+exit term
+exit expr
+exit values
+	)	)
+exit call
+exit factor
+exit term
+exit expr
+	)	)
+exit print
+	;	;
+exit stmt
+exit stmts
+	}	}
+exit the current scope
+exit block
+exit main_function
+exit program

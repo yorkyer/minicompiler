@@ -1,0 +1,2 @@
+g0:		.word 0x10040000
+g1:		.asciiz "The factorial of 10 is "
