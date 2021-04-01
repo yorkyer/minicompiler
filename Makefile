@@ -8,7 +8,10 @@ SRC := $(wildcard src/*.cpp)
 TARGET := bin/compiler
 
 
-all: $(TARGET)
+all: Bin $(TARGET)
+
+Bin: 
+	mkdir -p bin
 
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $^
