@@ -1,5 +1,5 @@
 # minicompiler
-My project of the compile course.
+My project of the compiler course.
 
 ## Grammar
 See [grammers.pdf](https://github.com/yorkyer/minicompiler/blob/master/grammars.pdf).
